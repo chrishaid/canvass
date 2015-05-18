@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+        <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js?2"></script>
+    </head>
+    <body>
+      <div id="map" style="width:100%; height:300px;"></div>
+<!--        <h1>TITLE 1</h1>
+        <table border=1 cellpadding=7>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Type</th>
+                <th>Address</th>
+                <th>Grade</th>
+            </tr>
+        {% for obj in object_list %}
+            <tr>
+                <td><a href="{{ obj.id }}/">{{ obj.first }}</a></td>
+                <td>{{ obj.last }}</td>
+                <td>{{ obj.type }}</td>
+                <td>{{ obj.address }}</td>
+                <td>{{ obj.grade }}</td>
+            </tr>
+        {% endfor %}
+        </table> -->
+        <script type="text/javascript">
+            var map = L.map('map').setView([41.8369, -87.6847], 12);
+            var mapquestLayer = new L.TileLayer('http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: 'Data, imagery and map information provided by <a href="http://open.mapquest.co.uk" target="_blank">MapQuest</a>,<a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors.',
+                subdomains: ['otile1','otile2','otile3','otile4']
+            });
+            map.addLayer(mapquestLayer);
+            var data = {
+              "type": "FeatureCollection",
+              "features": [
+                {% for obj in object_list %}
+                {
+                  "type": "Feature",
+                  "properties": {
+                    "first_name": "{{ obj.first}}",
+		    "last_name": "{{ obj.last}} ",
+                    "address": "{{ obj.address }}"
+                  },
+                  "geometry": {
+                    "type": "Point",
+                    "coordinates": [{{ obj.lat }}, {{ obj.long }}]
+                  }
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+              ]
+            };
+            var dataLayer = L.geoJson(data, {
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup(
+			    feature.properties.address 
+                    );
+                }
+            });
+           map.addLayer(data);
+        </script>
+    </body>
+</html>
