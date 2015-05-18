@@ -1,25 +1,52 @@
 <!doctype html>
 <html lang="en">
+   <style>
+	body {
+	   padding: 0;
+           margin: 0;
+	   }
+	html, body, #map {
+    	   height: 100%;
+	   }
+   </style>
     <head>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
 	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     </head>
     <body>
      
-      <div id="map" style="height:500px, width:500px;"></div>
+      <div id="map" ></div>
       
       <script>
      // Initialize map 
-      var map = L.map('map').setView([41.84, -87.68],13);
+      var map = L.map('map');//.setView([41.89165, -87.74679],17);
       
-      var mapLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-		attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-		maxZoom: 18,
-		minZoom: 9
+
+      var mapLayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+		attribution: '&copy; <a href="http://mapbox.com">Mapbox</a>',
+		maxZoom: 19,
+		minZoom: 9,
+		id: 'chrishaid.fa5d94b1',
+		accessToken: 'pk.eyJ1IjoiY2hyaXNoYWlkIiwiYSI6Im9VNHc0YmMifQ.PTeQDx8kEMuoyTyRqNWlnQ'
 		});           
 	
-	map.addLayer(mapLayer);
-        
+      map.locate({setView: true, maxZoom:17});
+	
+      map.addLayer(mapLayer);
+      
+
+      function onLocationFound(e) {
+ 	   var radius = e.accuracy / 2;
+
+    	   L.marker(e.latlng).addTo(map)
+           .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+           L.circle(e.latlng, radius).addTo(map);
+           }
+
+	map.on('locationfound', onLocationFound);
+  
 	var data = {
               "type": "FeatureCollection",
               "features": [
@@ -29,24 +56,38 @@
                   "properties": {
                     "first_name": "{{ obj.first}}",
 		    "last_name": "{{ obj.last}} ",
-                    "address": "{{ obj.address }}"
+                    "address": "{{ obj.address }}",
+                    "type": "{{ obj.type }}"
                   },
                   "geometry": {
                     "type": "Point",
-                    "coordinates": [{{ obj.lat }}, {{ obj.long }}]
+                    "coordinates": [{{ obj.long }}, {{ obj.lat}}]
                   }
-                }{% if not loop.last %},{% endif %}
+                } {% if not loop.last %},{% endif %}
                 {% endfor %}
               ]
             };
             var dataLayer = L.geoJson(data, {
-                onEachFeature: function(feature, layer) {
+                style: function(feature) {
+		   switch (feature.properties.type) {
+		       case 'KIPPster': return {color: "#439539"};
+		       case 'Alumni':   return {color: "#bcd631"};
+		       case 'Postcard': return {color: "#60a2d7"};
+		   }
+		},
+		pointToLayer: function(feature, latlng){
+		     return new L.CircleMarker(latlng, {radius: 8, fillOpacity: 0.85});
+		},
+		onEachFeature: function(feature, layer) {
                     layer.bindPopup(
-			    feature.properties.address 
+			  'Name: <b>' + feature.properties.first_name + ' ' + feature.properties.last_name + '</b>' +
+			  '<br>Addr: ' +  feature.properties.address +
+			  '<br>Type: ' +  feature.properties.type	 
                     );
-                }
+		}
             });
-//           map.addLayer(data);
+
+           map.addLayer(dataLayer);
         </script>
     </body>
 </html>

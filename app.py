@@ -3,7 +3,7 @@ from flask import Flask
 from flask import render_template
 app = Flask(__name__)
 
-csv_path = './static/combined_addresses_short.csv'
+csv_path = './static/combined_addresses.csv'
 csv_obj = csv.DictReader(open(csv_path, 'r'))
 csv_list = list(csv_obj)
 # http://stackoverflow.com/questions/1747817/python-create-a-dictionary-with-list-comprehension
