@@ -1,0 +1,25 @@
+#################################
+# PostgreSQL Container          #
+#################################
+
+db:
+    image: postgres
+    volumes:
+        - data:/usr/src/data
+    expose:
+        - "5432"
+
+#################################
+# Flask Container               #
+#################################
+
+web:
+    build: ./web
+    volumes:
+        - web:/code
+    ports:
+        - "80:5000"
+    links: 
+       - db:db
+    working_dir: /usr/src/app
+    command: python app.py
