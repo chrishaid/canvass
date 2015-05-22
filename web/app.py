@@ -1,21 +1,24 @@
 import os
 import csv
 import datetime
+from peewee import *
 from flask import Flask
 from flask import render_template
-from peewee import *
+from flask.ext.admin import Admin
+from flask.ext.admin.contrib.peewee import ModelView
 from playhouse.csv_utils import load_csv
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '123456790'
 
 #################
 # Data         #
 #################
 
 # Load address data from CSV 
-csv_path = './static/combined_addresses.csv'
-csv_obj = csv.DictReader(open(csv_path, 'rU'))
-csv_list = list(csv_obj)
+#csv_path = './static/combined_addresses.csv'
+#csv_obj = csv.DictReader(open(csv_path, 'rU'))
+#csv_list = list(csv_obj)
 # http://stackoverflow.com/questions/1747817/python-create-a-dictionary-with-list-comprehension
 #csv_dict = dict([[o['id'], o] for o in csv_list])
 
@@ -58,6 +61,7 @@ class Contact(BaseModel):
 
 class User(BaseModel):
 	"""User table and class"""
+	userid = PrimaryKeyField(unique = True)
 	username = CharField(unique = True)
 	password = CharField()
 	join_date = DateTimeField(default = datetime.datetime.now)
@@ -69,15 +73,31 @@ class Comment(BaseModel):
 	user = ForeignKeyField(User, related_name='comments')
 	contact = ForeignKeyField(Contact, related_name='contacts')
 	comment = CharField()
+	timestamp = DateTimeField(default = datetime.datetime.now)
 
 
 def create_tables():
 	"""Create tables in postgresql db from model and import contact adresses"""
 	db.connect()
 	db.create_tables([Contact, User, Comment])
+
+	# populate contact table
+	csv_path = './static/combined_addresses.csv'
+	csv_obj = csv.DictReader(open(csv_path, 'rU'))
 	Contact.insert_many(csv_obj).execute()
 
+	# set up basic admin user
+	admin_user = User.create(
+					username = "admin",
+					password = "admin",
+					active = True,
+					admin = True)
 
+#############
+# Load Data #
+#############
+
+all_contacts = Contact.select()
 
 ############
 # App     ##
@@ -85,8 +105,18 @@ def create_tables():
 @app.route("/")
 def index():
     return render_template('index.html', 
-           object_list=csv_list,
+           object_list=all_contacts
 )
+
+
+############
+# Admin   ##
+############
+#def UserAdmin(ModelView):
+#	inline_models = (User,)
+
+admin = Admin(app)
+admin.add_view(ModelView(User))
 
 
 #@app.route('/<number>/')
