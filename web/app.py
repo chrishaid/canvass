@@ -117,6 +117,7 @@ def index():
 
 admin = Admin(app)
 admin.add_view(ModelView(User))
+admin.add_view(ModelView(Contact))
 
 
 #@app.route('/<number>/')
@@ -126,7 +127,12 @@ admin.add_view(ModelView(User))
 #    )
 
 if __name__ == '__main__':
-    app.run(
+	try:
+		create_tables()
+
+	except: pass
+
+	app.run(
         host="0.0.0.0",
         port=5000,
         use_reloader=True,
