@@ -13,3 +13,5 @@ six
 psycopg2
 flask-admin
 flask-login
+flask_wtf
+WTForms
