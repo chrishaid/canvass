@@ -140,9 +140,11 @@ def create_tables():
 	db.create_tables([Contact, User, Comment, RecruitingZone, UserRZ])
 
 	# populate contact table
-	csv_path = './static/combined_addresses.csv'
-	csv_obj = csv.DictReader(open(csv_path, 'rU'))
-	Contact.insert_many(csv_obj).execute()
+	try:
+	    csv_path = './static/combined_addresses.csv'
+	    csv_obj = csv.DictReader(open(csv_path, 'rU'))
+	    Contact.insert_many(csv_obj).execute()
+	except: pass
 
 	# set up basic admin user
 	admin_user = User.create(
