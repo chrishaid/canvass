@@ -1,0 +1,14 @@
+db:
+  image: postgres
+  autorestart: always
+  expose:
+    - "5432"
+web:
+  image: chrishaid/canvass
+  autorestart: always
+    ports:
+      - "80:5000"
+    links:
+      - db:db
+    working_dir: /code
+    command: python app.py
