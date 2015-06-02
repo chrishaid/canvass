@@ -141,7 +141,7 @@ def create_tables():
 
 	# populate contact table
 	try:
-	    csv_path = './static/combined_addresses.csv'
+	    csv_path = '../data/combined_addresses.csv'
 	    csv_obj = csv.DictReader(open(csv_path, 'rU'))
 	    Contact.insert_many(csv_obj).execute()
 	except: pass

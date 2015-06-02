@@ -17,6 +17,7 @@ web:
     build: ./web
     volumes:
         - web:/code
+        - data:/data
     ports:
         - "80:5000"
     links: 
