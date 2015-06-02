@@ -137,7 +137,10 @@ class UserRZ(BaseModel):
 def create_tables():
 	"""Create tables in postgresql db from model and import contact adresses"""
 	db.connect()
-	db.create_tables([Contact, User, Comment, RecruitingZone, UserRZ])
+	
+	try:
+		db.create_tables([Contact, User, Comment, RecruitingZone, UserRZ])
+	except: pass
 
 	# populate contact table
 	try:
@@ -147,18 +150,22 @@ def create_tables():
 	except: pass
 
 	# set up basic admin user
-	admin_user = User.create(
-					username = "admin",
-					password = "admin",
-					active = True,
-					admin = True)
+	try:
+		admin_user = User.create(
+								username = "admin",
+								password = "admin",
+								active = True,
+								admin = True)
+	except: pass
 
 	# get dis(ticnt recruiting_zones from Contact and insurt into RecruitngZone table
-	rz_qry = (RecruitingZone
-		.insert_from(
-			fields=[RecruitingZone.recruiting_zone],
-			query = Contact.select(Contact.recruiting_zone).distinct().order_by(Contact.recruiting_zone))
-		.execute())
+	try:
+		rz_qry = (RecruitingZone
+			 	.insert_from(
+			 		fields=[RecruitingZone.recruiting_zone],
+			 		query = Contact.select(Contact.recruiting_zone).distinct().order_by(Contact.recruiting_zone))
+				.execute())
+	except: pass
 
 all_contacts = Contact.select()
 
