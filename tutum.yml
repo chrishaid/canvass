@@ -5,10 +5,11 @@ db:
     - "5432"
 web:
   image: chrishaid/canvass
-  autorestart: always
-    ports:
-      - "80:5000"
-    links:
-      - db:db
-    working_dir: /code
-    command: python app.py
+  volumes:
+    - '/usr/src/data:/usr/src/data'
+  ports:
+    - "80:5000"
+  links:
+    - db:db
+  command: python /usr/src/app/app.py
+
