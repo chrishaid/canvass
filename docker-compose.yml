@@ -18,9 +18,22 @@ web:
     volumes:
         - web:/code
         - data:/data
-    ports:
-        - "80:5000"
+    expose: 
+        - "8000"
     links: 
        - db:db
     working_dir: /code
-    command: python app.py
+    command: /usr/local/bin/gunicorn -w 2 -b :8000 app:app
+
+#################################
+# nginx Container               #
+#################################
+nginx:
+  restart: always
+  build: ./nginx/
+  ports:
+    - "80:80"
+  volumes_from:
+    - web
+  links:
+    - web:web
