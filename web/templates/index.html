@@ -15,20 +15,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     </head>
     <body>
-     
-      <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js'></script>
-      <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.mapbox.css' rel='stylesheet' />
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="//rawgithub.com/domoritz/leaflet-locatecontrol/gh-pages/dist/L.Control.Locate.min.css" />
       <!--[if lt IE 9]>
-      <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.ie.css' rel='stylesheet' />
+        <link rel="stylesheet" href="//rawgithub.com/domoritz/leaflet-locatecontrol/gh-pages/dist/L.Control.Locate.ie.min.css"/>
       <![endif]-->
-      <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/css/font-awesome.min.css' rel='stylesheet' />
 
-
+      <script src="//rawgithub.com/domoritz/leaflet-locatecontrol/gh-pages/dist/L.Control.Locate.min.js" ></script>
+      
       <div id="map" ></div>
       
       <script>
      // Initialize map 
-      var map = L.map('map').setView([41.89165, -87.74679],17);
+      var map = L.map('map').setView([41.89165, -87.74679],16);
       
 
       var mapLayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -42,7 +41,13 @@
       //map.locate({setView: true, maxZoom:17});
 	
       map.addLayer(mapLayer);
-      L.control.locate().addTo(map);
+      L.control.locate({
+        follow: true,
+        icon: 'fa fa-location-arrow',  // class for icon, fa-location-arrow or fa-map-marker
+        locateOptions: {
+               maxZoom: 18
+             }
+        }).addTo(map);
 
 //      function onLocationFound(e) {
 // 	   var radius = e.accuracy / 2;
