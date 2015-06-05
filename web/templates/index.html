@@ -8,6 +8,15 @@
 	html, body, #map {
     	   height: 100%;
 	   }
+
+  .info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+  }
    </style>
    <head>
 	  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
@@ -49,16 +58,8 @@
              }
         }).addTo(map);
 
-//      function onLocationFound(e) {
-// 	   var radius = e.accuracy / 2;
-//
-//    	   L.marker(e.latlng).addTo(map)
-//           .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-//           L.circle(e.latlng, radius).addTo(map);
-//           }
 
-//	map.on('locationfound', onLocationFound);
   
 	var data = {
               "type": "FeatureCollection",
@@ -80,27 +81,56 @@
                 {% endfor %}
               ]
             };
-            var dataLayer = L.geoJson(data, {
-                style: function(feature) {
-		   switch (feature.properties.type) {
-		       case 'KIPPster': return {color: "#439539"};
-		       case 'Alumni':   return {color: "#bcd631"};
-		       case 'Postcard': return {color: "#60a2d7"};
-		   }
+  var dataLayer = L.geoJson(data, {
+    style: function(feature) {
+      switch (feature.properties.type) {
+        case 'KIPPster': return {color: "#439539"};
+        case 'Alumni':   return {color: "#bcd631"};
+        case 'Postcard': return {color: "#60a2d7"};
+      }
 		},
 		pointToLayer: function(feature, latlng){
 		     return new L.CircleMarker(latlng, {radius: 8, fillOpacity: 0.85});
 		},
 		onEachFeature: function(feature, layer) {
-                    layer.bindPopup(
-			  'Name: <b>' + feature.properties.first_name + ' ' + feature.properties.last_name + '</b>' +
-			  '<br>Addr: ' +  feature.properties.address +
-			  '<br>Type: ' +  feature.properties.type	 
-                    );
-		}
+      layer.on({
+        click: highlightFeature
+      });
+    }
+  });
+
+  map.addLayer(dataLayer);
+
+  function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+              color: "red"
             });
 
-           map.addLayer(dataLayer);
+            info.update(layer.feature.properties);
+          }
+
+var info = L.control();
+
+  info.onAdd =  function(map) {
+    this._div = L.DomUtil.create('div', 'info'); // create div with calss info
+    this.update();
+    return this._div
+  }
+
+  info.update = function(props) { 
+    this._div.innerHTML = 'Name: <b>' + (props ?
+      props.first_name + ' ' + props.last_name + '</b>' +
+      '<br>Addr: ' +  props.address +
+      '<br>Type: ' +  props.type : 'Test Message'); 
+  }
+
+  
+
+  info.addTo(map)
+
+
         </script>
     </body>
 </html>
