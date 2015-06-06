@@ -101,14 +101,23 @@
 
   map.addLayer(dataLayer);
 
+  var lastClickedLayer;
+  
   function highlightFeature(e) {
-            var layer = e.target;
+                  
+            if(lastClickedLayer){
+              dataLayer.resetStyle(lastClickedLayer);
+            } 
 
+            var layer = e.target;
+            
             layer.setStyle({
               color: "red"
             });
 
             info.update(layer.feature.properties);
+
+           lastClickedLayer = layer;
           }
 
 var info = L.control();
