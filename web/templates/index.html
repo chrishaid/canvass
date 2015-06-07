@@ -101,7 +101,7 @@
 
   map.addLayer(dataLayer);
 
-  var lastClickedLayer;
+  var lastClickedLayer;  // needs to be global so that it can be tracked out side of scope fo highlightFeature
   
   function highlightFeature(e) {
                   
@@ -121,18 +121,20 @@
           }
 
 var info = L.control();
+  
+  info.setPosition("bottomleft");
 
   info.onAdd =  function(map) {
-    this._div = L.DomUtil.create('div', 'info'); // create div with calss info
+    this._div = L.DomUtil.create('div', 'info'); // create div with class info
     this.update();
     return this._div
   }
 
   info.update = function(props) { 
-    this._div.innerHTML = 'Name: <b>' + (props ?
+    this._div.innerHTML = (props ? 'Name: <b>' +
       props.first_name + ' ' + props.last_name + '</b>' +
       '<br>Addr: ' +  props.address +
-      '<br>Type: ' +  props.type : 'Test Message'); 
+      '<br>Type: ' +  props.type : 'Click markers for info.'); 
   }
 
   
