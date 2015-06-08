@@ -68,8 +68,9 @@
                 {
                   "type": "Feature",
                   "properties": {
+                    "id": "{{ obj.id}}",
                     "first_name": "{{ obj.first_name}}",
-		    "last_name": "{{ obj.last_name}} ",
+		                "last_name": "{{ obj.last_name}} ",
                     "address": "{{ obj.address }}",
                     "type": "{{ obj.type }}"
                   },
@@ -134,7 +135,9 @@ var info = L.control();
     this._div.innerHTML = (props ? 'Name: <b>' +
       props.first_name + ' ' + props.last_name + '</b>' +
       '<br>Addr: ' +  props.address +
-      '<br>Type: ' +  props.type : 'Click markers for info.'); 
+      '<br>Type: ' +  props.type +
+      '<br>ID: ' + props.id : 'Click markers for info.')
+      ; 
   }
 
   
