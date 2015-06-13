@@ -1,0 +1,7 @@
+<div id="comment">
+	{% for comment in comments %}
+	<p>{{ comment.comment }}</p>
+	{% else %}
+	<em>There's nothing here...</em>
+	{% endfor %}
+</div>

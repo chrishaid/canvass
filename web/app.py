@@ -1,12 +1,14 @@
 import os
 import csv
 import datetime
+import json
 from peewee import *
 from flask import Flask
-from flask import render_template, flash, redirect, url_for, session, request
+from flask import render_template, flash, redirect, url_for, session, request, jsonify
 from flask.ext.admin import Admin, BaseView
 from flask.ext.admin.contrib.peewee import ModelView
 from playhouse.csv_utils import load_csv
+from playhouse.shortcuts import model_to_dict
 from flask.ext.login import LoginManager, login_user , logout_user , current_user , login_required
 from flask_wtf import Form
 
@@ -112,6 +114,13 @@ class Comment(BaseModel):
 
 	class Meta:
 		order_by = ('timestamp', 'user',)
+
+	@classmethod
+	def show(user):
+			return (Comment
+					.select()
+					.where(Comment.user == user)
+					.order_by(Comment.timestamp.desc()))
 
 class RecruitingZone(BaseModel):
 	"""Recruiting Zone list"""
@@ -263,7 +272,9 @@ def login():
 
 
 
-
+############
+# Logout  ##
+############
 
 @app.route("/logout")
 @login_required
@@ -272,6 +283,26 @@ def logout():
     return redirect('login')
 
 
+#################
+# Add comments ##
+#################
+
+@app.route("/comments/<int:id>/", methods=['GET', 'POST'])
+@login_required
+def show_comments(id):
+	comments = Comment.get(Comment.contact == id)
+	comments_json = json.dumps(str(model_to_dict(comments)))
+	return comments_json
+
+
+@app.route('/post/<int:post_id>')
+def show_post(post_id):
+    # show the post with the given id, the id is an integer
+    return 'Post %d' % post_id
+
+####################################
+####################################
+####################################
 if __name__ == '__main__':
 	try:
 		create_tables()

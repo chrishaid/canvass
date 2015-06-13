@@ -136,7 +136,9 @@ var info = L.control();
       props.first_name + ' ' + props.last_name + '</b>' +
       '<br>Addr: ' +  props.address +
       '<br>Type: ' +  props.type +
-      '<br>ID: ' + props.id : 'Click markers for info.')
+      '<br>ID: ' + props.id  +
+      '<br><object type="text/html" data="/comments/'+props.id+'" ></object>'
+      : 'Click markers for info.')
       ; 
   }
 
