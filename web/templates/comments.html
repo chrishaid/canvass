@@ -1,7 +1,21 @@
-<div id="comment">
+<link href="static/css/signin.css" rel="stylesheet">
+<div id="comment", class="containeer">
 	{% for comment in comments %}
 	<p>{{ comment.comment }}</p>
 	{% else %}
-	<em>There's nothing here...</em>
+	<em>No comments available</em>
 	{% endfor %}
+	<br>
+    <div class="container">
+      <form class="form-signin" action"" method=post>
+        <label for="comment" class="sr-only">Add Comment</label>
+        <input type="text" id="username" name="username" class="form-control" placeholder="Comment" required autofocus>
+        <div class="checkbox">
+         <label>
+            <input type="checkbox" value="vacant"> Vacant?
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Add comment</button>
+      </form>
+    </div> 
 </div>
