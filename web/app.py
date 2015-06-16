@@ -290,9 +290,10 @@ def logout():
 @app.route("/comments/<int:id>/", methods=['GET', 'POST'])
 @login_required
 def show_comments(id):
-	comments = Comment.get(Comment.contact == id)
-	comments_json = json.dumps(str(model_to_dict(comments)))
-	return comments_json
+	comments = Comment.select(Comment.comment).where(Comment.contact == id)
+	#comments_json = json.dumps(str(model_to_dict(comments.comment)))
+	return render_template('comments.html',
+							comments = comments)
 
 
 @app.route('/post/<int:post_id>')
