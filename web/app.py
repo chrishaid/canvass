@@ -290,10 +290,24 @@ def logout():
 @app.route("/comments/<int:id>/", methods=['GET', 'POST'])
 @login_required
 def show_comments(id):
-	comments = Comment.select(Comment.comment).where(Comment.contact == id)
-	#comments_json = json.dumps(str(model_to_dict(comments.comment)))
-	return render_template('comments.html',
-							comments = comments)
+	if request.method == 'GET':
+		comments = Comment.select(Comment.comment).where(Comment.contact == id)
+		#comments_json = json.dumps(str(model_to_dict(comments.comment)))
+		return render_template('comments.html',
+			comments = comments)
+	if request.method == 'POST':
+		comment = request.form['new_comment']
+		contact = id
+		user = current_user.userid
+		Comment.insert(user = user,
+					   contact = contact,
+					   comment = comment
+					   ).execute()
+
+		comments = Comment.select(Comment.comment).where(Comment.contact == id)
+		
+		return render_template('comments.html',
+			comments = comments)
 
 
 @app.route('/post/<int:post_id>')
