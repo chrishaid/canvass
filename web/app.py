@@ -11,8 +11,11 @@ from playhouse.csv_utils import load_csv
 from playhouse.shortcuts import model_to_dict
 from flask.ext.login import LoginManager, login_user , logout_user , current_user , login_required
 from flask_wtf import Form
+from flask.ext.bcrypt import Bcrypt
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
+
 app.config['SECRET_KEY'] = '123456790'
 
 #################
@@ -162,12 +165,12 @@ def create_tables():
 	try:
 		admin_user = User.create(
 								username = "admin",
-								password = "admin",
+								password = bcrypt.generate_password_hash("admin"),
 								active = True,
 								admin = True)
 	except: pass
 
-	# get dis(ticnt recruiting_zones from Contact and insurt into RecruitngZone table
+	# get disticnt recruiting_zones from Contact and insert into RecruitngZone table
 	try:
 		rz_qry = (RecruitingZone
 			 	.insert_from(
@@ -217,13 +220,18 @@ class MyModelView(ModelView):
 				return redirect(url_for('login', next=request.url))
 
 
+class MyUserModelView(MyModelView):
+	def create_model(self, form):
+		form.password.data = bcrypt.generate_password_hash(form.password.data)
+		super(MyUserModelView, self).create_model(form)
 
-#def CommentsAdmin(ModelView):
-#	inline_models = (Contact)
+	def update_model(self, form, model):
+		form.password.data = bcrypt.generate_password_hash(form.password.data)
+		super(MyUserModelView, self).update_model(form, model)
 
 
-admin = Admin(app)
-admin.add_view(MyModelView(User))
+admin = Admin(app, name="Canvass", template_mode='bootstrap3')
+admin.add_view(MyUserModelView(User))
 admin.add_view(MyModelView(RecruitingZone))
 admin.add_view(MyModelView(UserRZ))
 admin.add_view(MyModelView(Contact))
@@ -252,8 +260,12 @@ def login():
     username = request.form['username']
     password = request.form['password']
     registered_user = None
+    
     try:
-    	registered_user = User.get(User.username == username, User.password == password)
+    	candidate_user = User.get(User.username == username)
+    	#candidate_pw = candidate_user.password
+    	#if bcrypt.check_password_hash(candidate_pw, password):
+    	registered_user = candidate_user
     except:
     	registered_user = None
     
