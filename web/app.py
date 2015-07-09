@@ -45,7 +45,6 @@ db = PostgresqlDatabase(database, user=user, host=host)
 # Models        #
 #################
 
-
 class BaseModel(Model):
 	"""Base model that will use the postgresql database"""
 	class Meta: 
@@ -163,9 +162,10 @@ def create_tables():
 
 	# set up basic admin user
 	try:
+		pw_hash = bcrypt.generate_password_hash("admin")
 		admin_user = User.create(
 								username = "admin",
-								password = bcrypt.generate_password_hash("admin"),
+								password = pw_hash,
 								active = True,
 								admin = True)
 	except: pass
@@ -263,9 +263,9 @@ def login():
     
     try:
     	candidate_user = User.get(User.username == username)
-    	#candidate_pw = candidate_user.password
-    	#if bcrypt.check_password_hash(candidate_pw, password):
-    	registered_user = candidate_user
+    	candidate_pw = candidate_user.password
+    	if bcrypt.check_password_hash(candidate_pw, password):
+    		registered_user = candidate_user
     except:
     	registered_user = None
     
